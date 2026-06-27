@@ -5,30 +5,34 @@
     <title>WebGIS Persebaran Fasilitas Sidoarjo</title>
     <meta name="viewport" content="width=device-width, initial-scale=1">
 
-    <!-- MAPBOX CSS & JS -->
     <link href="https://api.mapbox.com/mapbox-gl-js/v3.20.0/mapbox-gl.css" rel="stylesheet">
     <script src="https://api.mapbox.com/mapbox-gl-js/v3.20.0/mapbox-gl.js"></script>
 
-    <!-- MAPBOX DIRECTIONS -->
     <script src="https://api.mapbox.com/mapbox-gl-js/plugins/mapbox-gl-directions/v4.2.0/mapbox-gl-directions.js"></script>
     <link rel="stylesheet" href="https://api.mapbox.com/mapbox-gl-js/plugins/mapbox-gl-directions/v4.2.0/mapbox-gl-directions.css" type="text/css">
 
-    <!-- BOOTSTRAP CSS -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
 
-    <!-- BOOTSTRAP JS -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 
     <style>
-        body { margin:0; padding:0; }
-        #map { width: 100%; height: 600px; border-radius: 10px; }
+        body { margin:0; padding:0; background-color: #f8f9fa; }
+        
+        /* Memaksa peta memiliki tinggi mutlak agar tidak blank */
+        #map { 
+            width: 100%; 
+            height: 550px !important; 
+            min-height: 550px;
+            border-radius: 10px; 
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        }
 
         .legend-box {
             background: white;
-            padding: 10px;
+            padding: 12px;
             border-radius: 8px;
             font-size: 14px;
-            box-shadow: 0 0 5px rgba(0,0,0,0.20);
+            box-shadow: 0 2px 6px rgba(0,0,0,0.1);
         }
 
         .legend-color {
@@ -36,84 +40,139 @@
             width: 14px;
             height: 14px;
             margin-right: 6px;
-            border-radius: 3px;
+            border-radius: 5px;
+        }
+        .admin-panel {
+            background: #fff3cd;
+            border: 1px solid #ffeeba;
+            border-radius: 8px;
+            padding: 15px;
+            margin-top: 15px;
         }
     </style>
 </head>
 
 <body>
 
-<!-- NAVBAR -->
-<nav class="navbar navbar-dark bg-dark mb-4">
+<nav class="navbar navbar-expand-lg navbar-dark bg-dark mb-4">
   <div class="container-fluid">
     <span class="navbar-brand">WebGIS Persebaran Fasilitas Sidoarjo</span>
+    <div class="d-flex">
+        <button id="authBtn" class="btn btn-outline-light btn-sm" data-bs-toggle="modal" data-bs-target="#loginModal">Login Admin</button>
+    </div>
   </div>
 </nav>
 
-<div class="container">
+<div class="container-fluid px-4">
     <div class="row">
 
-        <!-- SIDEBAR -->
-        <div class="col-md-3">
-            <h5><b>Informasi Layer</b></h5>
-            <p>WebGIS ini menampilkan persebaran fasilitas publik di Kabupaten Sidoarjo.</p>
+        <div class="col-md-3 mb-3">
+            <div class="card p-3 shadow-sm mb-3">
+                <h5><b>Informasi Layer</b></h5>
+                <p class="text-muted small">WebGIS ini menampilkan persebaran fasilitas publik di Kabupaten Sidoarjo.</p>
 
-            <div class="form-check">
-              <input class="form-check-input" type="checkbox" id="layerSekolah" checked>
-              <label class="form-check-label" for="layerSekolah">Sekolah</label>
+                <div class="form-check">
+                  <input class="form-check-input" type="checkbox" id="layerSekolah" checked>
+                  <label class="form-check-label" for="layerSekolah">Sekolah</label>
+                </div>
+
+                <div class="form-check">
+                  <input class="form-check-input" type="checkbox" id="layerRS" checked>
+                  <label class="form-check-label" for="layerRS">Rumah Sakit</label>
+                </div>
+
+                <div class="form-check">
+                  <input class="form-check-input" type="checkbox" id="layerMasjid" checked>
+                  <label class="form-check-label" for="layerMasjid">Masjid</label>
+                </div>
+
+                <div class="form-check">
+                  <input class="form-check-input" type="checkbox" id="layerGereja" checked>
+                  <label class="form-check-label" for="layerGereja">Gereja</label>
+                </div>
+
+                <hr>
+
+                <div class="legend-box">
+                    <h6 class="fw-bold mb-2">Legenda:</h6>
+                    <div><span class="legend-color" style="background:#1E90FF"></span> Sekolah</div>
+                    <div><span class="legend-color" style="background:#FF0000"></span> Rumah Sakit</div>
+                    <div><span class="legend-color" style="background:#008000"></span> Masjid</div>
+                    <div><span class="legend-color" style="background:#8B4513"></span> Gereja</div>
+                    <div><span class="legend-color" style="background:#9C27B0"></span> Data Admin (Lokal)</div>
+                </div>
             </div>
 
-            <div class="form-check">
-              <input class="form-check-input" type="checkbox" id="layerRS" checked>
-              <label class="form-check-label" for="layerRS">Rumah Sakit</label>
-            </div>
-
-            <div class="form-check">
-              <input class="form-check-input" type="checkbox" id="layerMasjid" checked>
-              <label class="form-check-label" for="layerMasjid">Masjid</label>
-            </div>
-
-            <div class="form-check">
-              <input class="form-check-input" type="checkbox" id="layerGereja" checked>
-              <label class="form-check-label" for="layerGereja">Gereja</label>
-            </div>
-
-            <hr>
-
-            <div class="legend-box">
-                <div><span class="legend-color" style="background:#1E90FF"></span> Sekolah</div>
-                <div><span class="legend-color" style="background:#FF0000"></span> Rumah Sakit</div>
-                <div><span class="legend-color" style="background:#008000"></span> Masjid</div>
-                <div><span class="legend-color" style="background:#8B4513"></span> Gereja</div>
+            <div id="adminPanel" class="admin-panel shadow-sm d-none">
+                <h6 class="fw-bold text-warning-dark"><i class="badge bg-warning text-dark">Mode Admin Aktif</i></h6>
+                <p class="small text-muted mb-2">Klik area mana saja pada peta untuk mengambil koordinat:</p>
+                <form id="formFasilitas">
+                    <div class="mb-2">
+                        <label class="small fw-bold">Nama Fasilitas</label>
+                        <input type="text" id="namaFas" class="form-control form-control-sm" required placeholder="Contoh: Puskesmas Krian">
+                    </div>
+                    <div class="mb-2">
+                        <label class="small fw-bold">Kategori</label>
+                        <select id="katFas" class="form-select form-select-sm">
+                            <option value="Rumah Sakit">Rumah Sakit</option>
+                            <option value="Sekolah">Sekolah</option>
+                            <option value="Masjid">Masjid</option>
+                            <option value="Gereja">Gereja</option>
+                        </select>
+                    </div>
+                    <div class="row g-2 mb-2">
+                        <div class="col-6">
+                            <label class="small fw-bold">Longitude</label>
+                            <input type="text" id="lngFas" class="form-control form-control-sm" readonly required>
+                        </div>
+                        <div class="col-6">
+                            <label class="small fw-bold">Latitude</label>
+                            <input type="text" id="latFas" class="form-control form-control-sm" readonly required>
+                        </div>
+                    </div>
+                    <button type="submit" class="btn btn-sm btn-warning w-100 fw-bold text-dark">Simpan ke Basis Data</button>
+                </form>
             </div>
         </div>
 
-        <!-- MAP -->
-       <div class="col-md-9">
-    <div id="map"></div>
-
-    <!-- 🔥 TAMBAHAN QGIS (AMAN) -->
-    <section style="margin-top:40px;">
-      <h4>🗺️ Hasil Analisis Network (QGIS)</h4>
-      <p>Peta berikut merupakan hasil analisis rute terpendek dari QGIS.</p>
-
-      <div style="width:100%; height:400px; border-radius:10px; overflow:hidden;">
-        <iframe 
-          src="qgis2web.html" 
-          width="100%" 
-          height="100%" 
-          style="border:none;">
-        </iframe>
-      </div>
-    </section>
-
-</div>
+        <div class="col-md-9 mb-3" style="min-height: 550px;">
+            <div id="map"></div>
+        </div>
 
     </div>
 </div>
 
+<div class="modal fade" id="loginModal" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered modal-sm">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title fw-bold">Login Admin</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+      </div>
+      <div class="modal-body">
+        <form id="loginForm">
+            <div class="mb-3">
+                <label class="form-label small fw-bold">Username</label>
+                <input type="text" id="username" class="form-control" required placeholder="admin">
+            </div>
+            <div class="mb-3">
+                <label class="form-label small fw-bold">Password</label>
+                <input type="password" id="password" class="form-control" required placeholder="admin123">
+            </div>
+            <button type="submit" class="btn btn-dark w-100">Masuk</button>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+
+<footer class="bg-dark text-white text-center py-3 mt-4">
+    <small>Copyright &copy; Tuhfatul.Atiqoh117230061.2026 | UPN "Veteran" Yogyakarta</small>
+</footer>
+
 <script>
-    mapboxgl.accessToken = 'pk.eyJ1IjoiYXRpcW9oIiwiYSI6ImNtbnEyandhYzAzYjEyeHB5aDZwdzUweXcifQ.-JH954kbI7eXec_E4mGAOg';
+    // Token baru milikmu yang sudah aktif aman
+    mapboxgl.accessToken = 'pk.eyJ1IjoiYXRpcW9oIiwiYSI6ImNtcXc0MGlsczBpY24yc3F3OWg0bGc0ZDUifQ.Uii-I1x95Pd_45-bnyyX0Q';
 
     const map = new mapboxgl.Map({
         container: 'map',
@@ -122,114 +181,158 @@
         zoom: 10.5
     });
 
-    // Tambahkan kontrol rute
+    // Kontrol Navigasi Rute
     const directions = new MapboxDirections({
-    accessToken: mapboxgl.accessToken,
-    unit: 'metric',
-    profile: 'mapbox/driving'
+        accessToken: mapboxgl.accessToken,
+        unit: 'metric',
+        profile: 'mapbox/driving'
     });
     map.addControl(directions, 'top-left');
 
+    // Basis Data Lokal Browser (Simulasi CRUD Basis Data)
+    let localGeoJSON = JSON.parse(localStorage.getItem('adminGeoData')) || {
+        "type": "FeatureCollection",
+        "features": []
+    };
+
     map.on('load', () => {
-        // SEKOLAH
+        // Load data geojson dari folder assets
         map.addSource('sekolah', { type: 'geojson', data: 'assets/SCHOOL GEOJSON.geojson' });
         map.addLayer({
             id: 'sekolah', type: 'circle', source: 'sekolah',
             paint: { 'circle-radius': 6, 'circle-color': '#1E90FF' }
         });
 
-        // RUMAH SAKIT
         map.addSource('rs', { type: 'geojson', data: 'assets/HOSPITAL GEOJSON.geojson' });
         map.addLayer({
             id: 'rs', type: 'circle', source: 'rs',
             paint: { 'circle-radius': 7, 'circle-color': '#FF0000' }
         });
 
-        // MASJID
         map.addSource('masjid', { type: 'geojson', data: 'assets/MOSQUE GEOJSON.geojson' });
         map.addLayer({
             id: 'masjid', type: 'circle', source: 'masjid',
             paint: { 'circle-radius': 6, 'circle-color': '#008000' }
         });
 
-        // GEREJA
         map.addSource('gereja', { type: 'geojson', data: 'assets/CHURCH GEOJSON.geojson' });
         map.addLayer({
             id: 'gereja', type: 'circle', source: 'gereja',
             paint: { 'circle-radius': 6, 'circle-color': '#8B4513' }
         });
 
-        function setPopup(layer) {
+        // Layer khusus menampung input data baru dari Admin
+        map.addSource('admin-source', { type: 'geojson', data: localGeoJSON });
+        map.addLayer({
+            id: 'admin-layer', type: 'circle', source: 'admin-source',
+            paint: { 'circle-radius': 8, 'circle-color': '#9C27B0', 'circle-stroke-width': 2, 'circle-stroke-color': '#ffffff' }
+        });
+
+        // Inisialisasi klik popup tunggal
+        const layers = ['sekolah', 'rs', 'masjid', 'gereja', 'admin-layer'];
+        layers.forEach(layer => {
             map.on('click', layer, (e) => {
+                const coords = e.lngLat;
                 const p = e.features[0].properties;
+
                 new mapboxgl.Popup()
-                    .setLngLat(e.lngLat)
-                    .setHTML(`<b>${p.nama || 'Data'}</b><br>${p.keterangan || ''}`)
+                    .setLngLat(coords)
+                    .setHTML(`
+                        <div class="p-1">
+                            <strong class="d-block text-primary">${p.nama || p.name || 'Fasilitas Publik'}</strong>
+                            <span class="text-muted small">Keterangan: ${p.keterangan || 'Fasilitas'}</span><br>
+                            <button id="btnRute" class="btn btn-sm btn-primary mt-2">Cari Rute ke Sini</button>
+                        </div>
+                    `)
                     .addTo(map);
+
+                setTimeout(() => {
+                    const btn = document.getElementById('btnRute');
+                    if (btn) {
+                        btn.onclick = () => {
+                            navigator.geolocation.getCurrentPosition(
+                                (pos) => {
+                                    directions.setOrigin([pos.coords.longitude, pos.coords.latitude]);
+                                    directions.setDestination([coords.lng, coords.lat]);
+                                },
+                                () => { alert("Akses lokasi perangkat ditolak."); }
+                            );
+                        };
+                    }
+                }, 100);
             });
+        });
+    });
+
+    // Tangkap klik peta untuk koordinat Admin
+    map.on('click', (e) => {
+        if (!document.getElementById('adminPanel').classList.contains('d-none')) {
+            document.getElementById('lngFas').value = e.lngLat.lng.toFixed(6);
+            document.getElementById('latFas').value = e.lngLat.lat.toFixed(6);
         }
-
-        setPopup('sekolah');
-        setPopup('rs');
-        setPopup('masjid');
-        setPopup('gereja');
     });
 
-    function setPopup(layerName) {
-    map.on('click', layerName, (e) => {
-        const coords = e.lngLat;
-        const p = e.features[0].properties;
+    // Sistem Login Admin
+    const loginForm = document.getElementById('loginForm');
+    let isAdminLoggedIn = false;
 
-        new mapboxgl.Popup()
-            .setLngLat(coords)
-            .setHTML(`
-                <b>${p.nama || 'Lokasi'}</b><br>
-                ${p.keterangan || ''}<br><br>
-                <button id="btnRute" class="btn btn-sm btn-primary">Tampilkan Rute</button>
-            `)
-            .addTo(map);
+    loginForm.onsubmit = (e) => {
+        e.preventDefault();
+        const user = document.getElementById('username').value;
+        const pass = document.getElementById('password').value;
 
-        // TOMBOL RUTE
-        setTimeout(() => {
-            const btn = document.getElementById('btnRute');
-            if (btn) {
-                btn.onclick = () => {
-                    // Gunakan posisi user sebagai titik awal
-                    navigator.geolocation.getCurrentPosition(
-                        (pos) => {
-                            const userLng = pos.coords.longitude;
-                            const userLat = pos.coords.latitude;
+        if (user === 'admin' && pass === 'admin123') {
+            isAdminLoggedIn = true;
+            document.getElementById('adminPanel').classList.remove('d-none');
+            document.getElementById('authBtn').innerText = "Logout Admin";
+            document.getElementById('authBtn').classList.replace('btn-outline-light', 'btn-danger');
+            
+            const modalEl = document.getElementById('loginModal');
+            const modalInstance = bootstrap.Modal.getInstance(modalEl);
+            modalInstance.hide();
+        } else {
+            alert('Username atau password Admin salah!');
+        }
+    };
 
-                            directions.setOrigin([userLng, userLat]);
-                            directions.setDestination([coords.lng, coords.lat]);
-                        },
-                        () => {
-                            alert("Lokasi kamu tidak bisa diakses.");
-                        }
-                    );
-                };
-            }
-        }, 100);
-    });
-}
+    document.getElementById('authBtn').onclick = function() {
+        if (isAdminLoggedIn) {
+            isAdminLoggedIn = false;
+            document.getElementById('adminPanel').classList.add('d-none');
+            this.innerText = "Login Admin";
+            this.classList.replace('btn-danger', 'btn-outline-light');
+            window.location.reload();
+        }
+    };
 
-    // TOGGLE
-    document.getElementById('layerSekolah').onchange = (e) =>
-        map.setLayoutProperty('sekolah','visibility', e.target.checked?'visible':'none');
+    // Tambah Data Baru ke Basis Data Lokal Browser
+    document.getElementById('formFasilitas').onsubmit = (e) => {
+        e.preventDefault();
+        const name = document.getElementById('namaFas').value;
+        const category = document.getElementById('katFas').value;
+        const lng = parseFloat(document.getElementById('lngFas').value);
+        const lat = parseFloat(document.getElementById('latFas').value);
 
-    document.getElementById('layerRS').onchange = (e) =>
-        map.setLayoutProperty('rs','visibility', e.target.checked?'visible':'none');
+        const newFeature = {
+            "type": "Feature",
+            "properties": { "nama": name, "keterangan": category },
+            "geometry": { "type": "Point", "coordinates": [lng, lat] }
+        };
 
-    document.getElementById('layerMasjid').onchange = (e) =>
-        map.setLayoutProperty('masjid','visibility', e.target.checked?'visible':'none');
+        localGeoJSON.features.push(newFeature);
+        localStorage.setItem('adminGeoData', JSON.stringify(localGeoJSON));
+        map.getSource('admin-source').setData(localGeoJSON);
+        
+        alert('Data spasial baru berhasil disimpan!');
+        document.getElementById('formFasilitas').reset();
+    };
 
-    document.getElementById('layerGereja').onchange = (e) =>
-        map.setLayoutProperty('gereja','visibility', e.target.checked?'visible':'none');
+    // Toggle Layer Kontrol
+    document.getElementById('layerSekolah').onchange = (e) => map.setLayoutProperty('sekolah','visibility', e.target.checked?'visible':'none');
+    document.getElementById('layerRS').onchange = (e) => map.setLayoutProperty('rs','visibility', e.target.checked?'visible':'none');
+    document.getElementById('layerMasjid').onchange = (e) => map.setLayoutProperty('masjid','visibility', e.target.checked?'visible':'none');
+    document.getElementById('layerGereja').onchange = (e) => map.setLayoutProperty('gereja','visibility', e.target.checked?'visible':'none');
 </script>
-
-    <footer class="bg-dark text-white text-center py-3 mt-4">
-    <small>copyright @ Tuhfatul.Atiqoh117230061.2026</small>
-</footer>
 
 </body>
 </html>
